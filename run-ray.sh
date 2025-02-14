@@ -16,14 +16,14 @@ export VLLM_WORKER_MULTIPROC_METHOD=spawn
 
 RAY="python3 -m ray.scripts.scripts"
 RAY_PORT=6379
-HEAD_NODE_ADDRESS=$(hostname -i)
+HEAD_NODE=$(hostname)
 
 # Needed on AMD at least, see https://github.com/vllm-project/vllm/issues/3818
 export RAY_EXPERIMENTAL_NOSET_ROCR_VISIBLE_DEVICES=1
 
 # Using the socket network, rather than infiniband et al, not ideal
 # but works for now
-#export NCCL_NET=Socket
+export NCCL_NET=Socket
 
 # Load the modules
 module purge
@@ -32,8 +32,7 @@ module load pytorch/2.5
 #source venv/bin/activate
 
 # Start Ray on the head node
-echo "Initializing ray cluster on head node $HEAD_NODE_ADDRESS"
-export VLLM_HOST_IP=${HEAD_NODE_ADDRESS}
+echo "Initializing ray cluster on head node $HEAD_NODE"
 $RAY start --head --port=${RAY_PORT} --disable-usage-stats
 
 # Make sure head node has started properly
@@ -45,8 +44,7 @@ done
 
 WORKER_NNODES=$(( SLURM_NNODES - 1 ))
 echo "Start the $WORKER_NNODES worker node(s)"
-srun --ntasks=$WORKER_NNODES --nodes=$WORKER_NNODES --exclude=$(hostname) bash -c "export VLLM_HOST_IP=\$(hostname -i); $RAY start --block --address=${HEAD_NODE_ADDRESS}:${RAY_PORT}" &
-#srun --ntasks=$WORKER_NNODES --nodes=$WORKER_NNODES --exclude=$(hostname) $RAY start --block --address=$(hostname):${RAY_PORT} &
+srun --ntasks=$WORKER_NNODES --nodes=$WORKER_NNODES --exclude=$HEAD_NODE $RAY start --block --address=$HEAD_NODE:${RAY_PORT} &
 
 # Wait until all worker nodes have checked in
 sleep 10
@@ -76,4 +74,4 @@ done
 curl localhost:8000/v1/completions -H "Content-Type: application/json" -d '{"prompt": "I finally got vLLM working on multiple nodes on LUMI", "temperature": 0, "max_tokens": 100, "model": "meta-llama/Meta-Llama-3.1-8B-Instruct"}' | json_pp
 
 # If you want to keep vLLM running you need to add a "wait" here, otherwise the job will stop when the above line is done.
-wait
+# wait
