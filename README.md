@@ -10,5 +10,11 @@ These scripts start the vLLM server in OpenAI-compatible API mode, runs a query 
 
 There's also a script to run vLLM with ray for two full nodes on LUMI: [run-vllm-ray.sh](run-vllm-ray.sh)
 
+Scripts to run the same with Ollama:
+
+- [`run-ollama-puhti4.sh`](run-ollama-puhti4.sh)
+- [`run-ollama-lumi8.sh`](run-ollama-lumi8.sh)
+
 ## TODO
+- [ ] the Ollama scripts don't seem to use all GPUs, probably scripts are reserving too much
 - [ ] run-vllm-ray.sh should use high-speed net and not need `NCCL_NET=Socket`
