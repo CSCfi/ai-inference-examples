@@ -16,7 +16,7 @@ export HF_HOME=/scratch/project_462000007/mvsjober/hf-cache
 
 # Where to store the vLLM server log
 VLLM_LOG=/scratch/project_462000007/mvsjober/vllm-logs/${SLURM_JOB_ID}.log
-mkdir $(dirname $VLLM_LOG)
+mkdir -p $(dirname $VLLM_LOG)
 
 MODEL="deepseek-ai/DeepSeek-R1-Distill-Llama-70B"
 #MODEL="deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
@@ -45,4 +45,9 @@ done
 curl localhost:8000/v1/completions -H "Content-Type: application/json" \
      -d "{\"prompt\": \"What would be like a hello world for LLMs?\", \"temperature\": 0, \"max_tokens\": 100, \"model\": \"$MODEL\"}" | json_pp
 
+# To stop job after we have run what we want kill it
 kill $VLLM_PID
+
+# ... if we want to leave it running instead, don't kill but wait
+# wait
+

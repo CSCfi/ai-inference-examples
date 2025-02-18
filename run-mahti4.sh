@@ -43,4 +43,8 @@ done
 curl localhost:8000/v1/completions -H "Content-Type: application/json" \
      -d "{\"prompt\": \"What would be like a hello world for LLMs?\", \"temperature\": 0, \"max_tokens\": 100, \"model\": \"$MODEL\"}" | json_pp
 
+# To stop job after we have run what we want kill it
 kill $VLLM_PID
+
+# ... if we want to leave it running instead, don't kill but wait
+# wait
