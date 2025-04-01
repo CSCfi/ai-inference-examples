@@ -18,12 +18,13 @@ export HF_HOME=/scratch/project_462000007/mvsjober/hf-cache
 VLLM_LOG=/scratch/project_462000007/mvsjober/vllm-logs/${SLURM_JOB_ID}.log
 mkdir -p $(dirname $VLLM_LOG)
 
-MODEL="deepseek-ai/DeepSeek-R1-Distill-Llama-70B"
-#MODEL="deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
+#MODEL="deepseek-ai/DeepSeek-R1-Distill-Llama-70B"
+MODEL="deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
 
 python -m vllm.entrypoints.openai.api_server --model=$MODEL \
-       --tensor-parallel-size 4 \
-       --pipeline-parallel-size 2 \
+       --tensor-parallel-size 8 \
+       --pipeline-parallel-size 1 \
+       --gpu-memory-utilization=0.95 \
        --max-model-len 32768 \
        --enforce-eager > $VLLM_LOG &
 
