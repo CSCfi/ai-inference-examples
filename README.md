@@ -15,6 +15,12 @@ Scripts to run the same with Ollama:
 - [`run-ollama-puhti4.sh`](run-ollama-puhti4.sh)
 - [`run-ollama-lumi8.sh`](run-ollama-lumi8.sh)
 
+**Note:** all script are Slurm batch job scripts and need to be submitted with `sbatch`, for example:
+
+```bash
+sbatch run-vllm-lumi8.sh
+```
+
 ## TODO
 - [ ] the Ollama scripts don't seem to use all GPUs, probably scripts are reserving too much
 - [ ] run-vllm-ray.sh should use high-speed net and not need `NCCL_NET=Socket`
