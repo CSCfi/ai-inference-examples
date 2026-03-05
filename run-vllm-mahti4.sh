@@ -8,43 +8,21 @@
 
 module load pytorch/2.5
 
-# Where to store the huge models
+# We configure vLLM to use a Unix Domain Socket file (vllm.sock) to listen for requests using the --uds argument.
+# This automatically restricts request to users that can access that file (i.e., members of our project), instead of being
+# an open HTTP port anyone on the system could potentially access.
+SOCKET_FILE=$TMPDIR/vllm-$SLURM_JOB_ACCOUNT.sock
+
+# Where to store the huge models. Point this to your project's scratch directory.
 # For example Deepseek-R1-Distill-Llama-70B requires 132GB
-export HF_HOME=/scratch/project_2001659/mvsjober/hf-cache
+export HF_HOME=/scratch/$SLURM_JOB_ACCOUNT/hf-cache
 
-# Where to store the vLLM server log
-VLLM_LOG=/scratch/project_2001659/mvsjober/vllm-logs/${SLURM_JOB_ID}.log
-mkdir -p $(dirname $VLLM_LOG)
-
-#MODEL="deepseek-ai/DeepSeek-R1-Distill-Llama-70B"
 MODEL="deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
 
 python -m vllm.entrypoints.openai.api_server --model=$MODEL \
        --tensor-parallel-size 4 \
        --max-model-len 32768 \
        --gpu_memory_utilization 0.98 \
-       --enforce-eager > $VLLM_LOG &
+       --enforce-eager \
+       --uds $SOCKET_FILE
 
-VLLM_PID=$!
-
-echo "Starting vLLM process $VLLM_PID - logs go to $VLLM_LOG"
-
-# Wait until vLLM is running properly
-sleep 20
-while ! curl localhost:8000 >/dev/null 2>&1
-do
-    # catch if vllm has crashed
-    if [ -z "$(ps --pid $VLLM_PID --no-headers)" ]; then
-        exit
-    fi
-    sleep 10
-done
-
-curl localhost:8000/v1/completions -H "Content-Type: application/json" \
-     -d "{\"prompt\": \"What would be like a hello world for LLMs?\", \"temperature\": 0, \"max_tokens\": 100, \"model\": \"$MODEL\"}" | json_pp
-
-# To stop job after we have run what we want kill it
-kill $VLLM_PID
-
-# ... if we want to leave it running instead, don't kill but wait
-# wait
