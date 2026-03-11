@@ -7,7 +7,7 @@ Scripts to run [DeepSeek-R1](https://huggingface.co/deepseek-ai/DeepSeek-R1) (di
 - [`run-vllm-lumi4`](run-vllm-lumi4.sh) (deepseek-ai/DeepSeek-R1-Distill-Qwen-32B)
 - [`run-vllm-lumi16`](run-vllm-lumi16.sh) (deepseek-ai/DeepSeek-R1-0528)
 
-These scripts start the vLLM server listening on a Unix Domain Socket which is represented by a file on the filesystem (by default `vllm-<slurm_job_id>.sock`) rather than opening a network port on the node for security reasons.
+The LUMI scripts start the vLLM server listening on a Unix Domain Socket which is represented by a file on the filesystem (by default `vllm-<slurm_job_id>.sock`) rather than opening a network port on the node for security reasons. This also has the advantage that we cannot get into conflicts with other processes that might block the same port.
 
 While the job is running, you can connect connect to the vLLM server with a process on the same node via that node.
 For example, the following opens a terminal on the node running vLLM and sends a request via the cURL command line tool:
@@ -56,6 +56,23 @@ for chunk in client.completions.create(
         stream=True
 ):
         print(chunk.choices[0].text, end="")
+```
+
+The version of vLLM installed on Puhti and Mahti does not currently support UDS, so instead we configure it
+to require authentication with an API key which we generate in the sbatch script. You can find the
+key in the job log. The correponding cURL request is:
+
+```bash 
+username@compute-node$ curl http://localhost:8000/v1/completions \
+    -H "Authorization: Bearer <api-key>"
+    -H "Content-Type: application/json" \
+    -d '{
+        "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
+        "prompt": "Running vLLM on a supercomputer is",
+        "max_tokens": 100,
+        "temperature": 0.5,
+        "stream": false
+    }'
 ```
 
 You can run the script as follows.
