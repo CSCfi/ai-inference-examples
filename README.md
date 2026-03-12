@@ -1,11 +1,19 @@
 # AI inference example scripts for supercomputers
 
+## Starting a vLLM inference server
+
 Scripts to run [DeepSeek-R1](https://huggingface.co/deepseek-ai/DeepSeek-R1) (distilled versions, Qwen-32B or Llama-70B) vLLM using 4 GPUs on Puhti, Mahti or LUMI. There is also a script to run the full [DeepSeek-R1-0528](https://huggingface.co/deepseek-ai/DeepSeek-R1-0528) model on two full LUMI nodes (16 GPUs).
 
 - [`run-vllm-puhti4.sh`](run-vllm-puhti4.sh) ( deepseek-ai/DeepSeek-R1-Distill-Qwen-32B )
 - [`run-vllm-mahti4.sh`](run-vllm-mahti4.sh) ( deepseek-ai/DeepSeek-R1-Distill-Qwen-32B )
 - [`run-vllm-lumi4`](run-vllm-lumi4.sh) (deepseek-ai/DeepSeek-R1-Distill-Qwen-32B)
 - [`run-vllm-lumi16`](run-vllm-lumi16.sh) (deepseek-ai/DeepSeek-R1-0528)
+
+**Note:** all script are Slurm batch job scripts and need to be submitted with `sbatch`, for example:
+
+```bash
+sbatch run-vllm-lumi4.sh
+```
 
 The LUMI scripts start the vLLM server listening on a Unix Domain Socket which is represented by a file on the filesystem (by default `vllm-<slurm_job_id>.sock`) rather than opening a network port on the node for security reasons. This also has the advantage that we cannot get into conflicts with other processes that might block the same port.
 
@@ -77,7 +85,7 @@ username@compute-node$ curl http://localhost:8000/v1/completions \
 
 You can run the script as follows.
 
-On Puhti/Mathi
+On Puhti/Mahti
 ```bash
 username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
 
@@ -92,6 +100,8 @@ username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
 username@compute-node$ singularity run -B /pfs,/scratch,/projappl /appl/local/laifs/containers/lumi-multitorch-latest.sif python python_client.py $TMPDIR/vllm-$SLURM_JOB_ACCOUNT.sock 
 ```
 
+## Ollama examples
+
 Scripts to run with Ollama:
 
 - [`run-ollama-puhti4.sh`](run-ollama-puhti4.sh)
@@ -100,7 +110,7 @@ Scripts to run with Ollama:
 **Note:** all script are Slurm batch job scripts and need to be submitted with `sbatch`, for example:
 
 ```bash
-sbatch run-vllm-lumi4.sh
+sbatch run-ollama-puhti4.sh
 ```
 
 ## TODO
