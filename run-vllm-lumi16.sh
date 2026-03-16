@@ -9,7 +9,8 @@
 
 # We use the PyTorch container provided by the LUMI AI Factory Services, which contains vLLM.
 export CONTAINER_IMAGE=/appl/local/laifs/containers/lumi-multitorch-latest.sif
-export SINGULARITY_BIND=/pfs,/scratch,/projappl,/project,/flash
+module use /appl/local/laifs/modules
+module load lumi-aif-singularity-bindings
 
 ## note: below are copied from large-scale training run, which was a known setup for multinode with torchrun, but they are not required to work. need to test if they improve performance.
 # export NCCL_SOCKET_IFNAME=hsn0,hsn1,hsn2,hsn3
