@@ -113,5 +113,63 @@ Scripts to run with Ollama:
 sbatch run-ollama-puhti4.sh
 ```
 
+## Running Inference on LUMI
+We provide three Python scripts for running LLM inference on LUMI using the `lumi-multitorch` container.
+
+### 1. Interactive Chat (Server-Client Mode)
+Start a vLLM server and start a chat (with history) with the LLM. 
+
+1.  **Start the vLLM server:** (Make sure to update your billing project first)
+    ```bash
+    sbatch run-vllm-lumi4.sh
+    ```
+2.  **Connect to the compute node's shell:** Find your job ID with `squeue --me`, then "overlap" into the allocated node:
+    ```bash
+    srun --overlap --jobid <slurm-job-id> --pty bash
+    ```
+3.  **Launch the chat script:**
+    ```bash
+    singularity run -B /pfs,/scratch,/projappl /appl/local/laifs/containers/lumi-multitorch-latest.sif \
+    python chat_with_LLM.py "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
+    ```
+
+---
+
+### 2. Batched Inference with the server
+Start a vLLM server and send a large volume of prompts from _prompts.txt_ to the LLM, 256 at a time. 
+
+1.  **Start the server and connect to the node** (follow steps 1 & 2 from the Chat mode above).
+2.  **Run the batch script:**
+    ```bash
+    singularity run -B /pfs,/scratch,/projappl /appl/local/laifs/containers/lumi-multitorch-latest.sif \
+    python offline_batched_inference_from_server.py "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
+    ```
+    *The results will be saved to `results.json`.*
+
+---
+
+### 3. Python Batch Inference
+Get resources with _salloc_ and run batched inference directly in Python.
+
+1.  **Request an interactive GPU allocation:**
+    ```bash
+    salloc -p dev-g --nodes=1 --gpus-per-node=8 --ntasks-per-node=1 --cpus-per-task=56 --time=2:00:00 -A <project_id>
+    ```
+2.  **Enter the compute node:**
+    ```bash
+    srun --overlap --jobid <slurm-job-id> --pty bash
+    ```
+3.  **Set required environment variables:**
+    ```bash
+    export HF_HOME=/scratch/<project_id>/hf-cache
+    export HIP_VISIBLE_DEVICES=$ROCR_VISIBLE_DEVICES
+    export TORCH_COMPILE_DISABLE=1
+    ```
+4.  **Run the script:**
+    ```bash
+    singularity run -B /pfs,/scratch,/projappl /appl/local/laifs/containers/lumi-multitorch-latest.sif \
+    python offline_batched_inference_from_Python.py "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
+    ```
+
 ## TODO
 - [ ] the Ollama scripts don't seem to use all GPUs, probably scripts are reserving too much
