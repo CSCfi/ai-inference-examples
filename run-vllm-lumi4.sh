@@ -9,7 +9,8 @@
 
 # We use the PyTorch container provided by the LUMI AI Factory Services, which contains vLLM.
 export CONTAINER_IMAGE=/appl/local/laifs/containers/lumi-multitorch-latest.sif
-export SINGULARITY_BIND=/pfs,/scratch,/projappl,/project,/flash
+module use /appl/local/laifs/modules
+module load lumi-aif-singularity-bindings
 
 # Where to store the huge models. Point this to your project's scratch directory.
 export HF_HOME=/scratch/$SLURM_JOB_ACCOUNT/hf-cache/
