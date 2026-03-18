@@ -1,10 +1,3 @@
-# salloc -p dev-g --nodes=1 --gpus-per-node=8 --ntasks-per-node=1 --cpus-per-task=56 --time=2:00:00 --account=project_462000131 
-# srun --overlap --jobid <slurm-job-id> --pty bash
-# export HF_HOME=/scratch/project_462000131/voitanta/LLM_Experiments/hf-cache
-# export HIP_VISIBLE_DEVICES=$ROCR_VISIBLE_DEVICES
-# export TORCH_COMPILE_DISABLE=1
-# singularity run -B /pfs,/scratch,/projappl /appl/local/laifs/containers/lumi-multitorch-latest.sif python offline_batched_inference_from_Python.py "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
-
 import os
 import sys
 import json

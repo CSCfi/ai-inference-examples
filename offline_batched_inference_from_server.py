@@ -1,6 +1,3 @@
-# srun --overlap --jobid <slurm-job-id> --pty bash
-# singularity run -B /pfs,/scratch,/projappl /appl/local/laifs/containers/lumi-multitorch-latest.sif python offline_batched_inference_from_server.py "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
-
 import json
 import asyncio
 import httpx
@@ -51,7 +48,7 @@ async def main():
         prompts = [line.strip() for line in f if line.strip()]
 
     # 4. Automatically find the socket file
-    socket_path = f"/tmp/vllm-{os.environ.get('USER')}.sock"
+    socket_path = f"/tmp/vllm-{os.environ.get("SLURM_JOB_ID")}.sock"
 
     if not os.path.exists(socket_path):
         print(f"Error: Socket not found at {socket_path}")

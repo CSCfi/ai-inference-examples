@@ -1,5 +1,3 @@
-# singularity run -B /pfs,/scratch,/projappl /appl/local/laifs/containers/lumi-multitorch-latest.sif python chat_with_LLM.py "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
-
 import httpx
 import sys
 import os
@@ -7,7 +5,7 @@ import argparse
 from openai import OpenAI
 
 # 1. Automatically find the socket file and set up the connection
-socket_path = f"/tmp/vllm-{os.environ.get('USER')}.sock"
+socket_path = f"/tmp/vllm-{os.environ.get("SLURM_JOB_ID")}.sock"
 if not os.path.exists(socket_path):
     print(f"Error: Socket not found at {socket_path}")      
     sys.exit(1)
