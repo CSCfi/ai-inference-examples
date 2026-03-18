@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -A project_462000007
+#SBATCH -A project_XXXXXXXXX
 #SBATCH -p dev-g
 #SBATCH --time 1:00:00
 #SBATCH --tasks-per-node 1
