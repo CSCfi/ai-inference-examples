@@ -163,11 +163,11 @@ Get resources with _salloc_ and run batched inference directly in Python. Use th
     ```bash
     srun --overlap --jobid <slurm-job-id> --pty bash
     ```
-3.  **Set required environment variables:**
+3.  **Set required environment variables:** (enter your project ID)
     ```bash
-    export HF_HOME=/scratch/project_<project_id>/$USER/hf-cache
     export HIP_VISIBLE_DEVICES=$ROCR_VISIBLE_DEVICES
     export TORCH_COMPILE_DISABLE=1
+    export HF_HOME=/scratch/project_<project_id>/$USER/hf-cache
     ```
 
 4.  **Run the script**:
