@@ -127,9 +127,10 @@ Start a vLLM server and start a chat (with history) with the LLM.
     ```bash
     srun --overlap --jobid <slurm-job-id> --pty bash
     ```
-3. **Wait for the model to load.** Monitor progress in _slurm-XXXXXXXXX.out_.
+3. **Wait ~20min for the model to load.** Monitor progress with `tail -f slurm-<job-id>.out`.
+   The model has been loaded when you see line similar to `[0;36m(APIServer pid=8379)[0;0m INFO:     Application startup complete.`
 
-4.  **Launch the chat script.**
+5.  **Launch the chat script.**
     ```bash
     singularity run -B /pfs,/scratch,/projappl /appl/local/laifs/containers/lumi-multitorch-latest.sif \
     python chat_with_LLM.py "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
@@ -139,7 +140,7 @@ Start a vLLM server and start a chat (with history) with the LLM.
 ---
 
 ### 2. Batched Inference with the server
-Start a vLLM server and send a large volume of prompts from `prompts.txt` to the LLM, 256 at a time. 
+Send a large volume of prompts from `prompts.txt` to the vLLM server, 256 at a time. 
 
 1.  **Start the server and connect to the node:** (follow steps 1-3 from the Chat mode above).
 2.  **Run the batch script:**
