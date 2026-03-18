@@ -119,26 +119,29 @@ We provide three Python scripts for running LLM inference on LUMI using the `lum
 ### 1. Interactive Chat (Server-Client Mode)
 Start a vLLM server and start a chat (with history) with the LLM. 
 
-1.  **Start the vLLM server:** (Make sure to update your billing project first)
+1.  **Start the vLLM server.** (Make sure to update your billing project first)
     ```bash
     sbatch run-vllm-lumi4.sh
     ```
-2.  **Connect to the compute node's shell:** Find your job ID with `squeue --me`, then "overlap" into the allocated node:
+2.  **Connect to the compute node's shell.** Find your job ID with `squeue --me`, then "overlap" into the allocated node as soon as the job is running:
     ```bash
     srun --overlap --jobid <slurm-job-id> --pty bash
     ```
-3.  **Launch the chat script:**
+3. **Wait for the model to load.** Monitor progress in _slurm-XXXXXXXXX.out_.
+
+4.  **Launch the chat script.**
     ```bash
     singularity run -B /pfs,/scratch,/projappl /appl/local/laifs/containers/lumi-multitorch-latest.sif \
     python chat_with_LLM.py "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
     ```
+    Type 'exit' to stop.
 
 ---
 
 ### 2. Batched Inference with the server
-Start a vLLM server and send a large volume of prompts from _prompts.txt_ to the LLM, 256 at a time. 
+Start a vLLM server and send a large volume of prompts from `prompts.txt` to the LLM, 256 at a time. 
 
-1.  **Start the server and connect to the node** (follow steps 1 & 2 from the Chat mode above).
+1.  **Start the server and connect to the node:** (follow steps 1-3 from the Chat mode above).
 2.  **Run the batch script:**
     ```bash
     singularity run -B /pfs,/scratch,/projappl /appl/local/laifs/containers/lumi-multitorch-latest.sif \
@@ -148,7 +151,7 @@ Start a vLLM server and send a large volume of prompts from _prompts.txt_ to the
 
 ---
 
-### 3. Python Batch Inference
+### 3. Python Batch Inference (single node)
 Get resources with _salloc_ and run batched inference directly in Python. Use this method for high-throughput and simplicity. 
 
 1.  **Request an interactive GPU allocation:**
@@ -165,7 +168,8 @@ Get resources with _salloc_ and run batched inference directly in Python. Use th
     export HIP_VISIBLE_DEVICES=$ROCR_VISIBLE_DEVICES
     export TORCH_COMPILE_DISABLE=1
     ```
-4.  **Run the script:**
+
+4.  **Run the script**:
     ```bash
     singularity run -B /pfs,/scratch,/projappl /appl/local/laifs/containers/lumi-multitorch-latest.sif \
     python offline_batched_inference_from_Python.py "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
