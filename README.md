@@ -113,7 +113,7 @@ Scripts to run with Ollama:
 sbatch run-ollama-puhti4.sh
 ```
 
-## Running Inference on LUMI
+## Running Inference on LUMI with Python
 We provide three Python scripts for running LLM inference on LUMI using the `lumi-multitorch` container.
 
 ### 1. Interactive Chat (Server-Client Mode)
@@ -149,11 +149,11 @@ Start a vLLM server and send a large volume of prompts from _prompts.txt_ to the
 ---
 
 ### 3. Python Batch Inference
-Get resources with _salloc_ and run batched inference directly in Python.
+Get resources with _salloc_ and run batched inference directly in Python. Use this method for high-throughput and simplicity. 
 
 1.  **Request an interactive GPU allocation:**
     ```bash
-    salloc -p dev-g --nodes=1 --gpus-per-node=8 --ntasks-per-node=1 --cpus-per-task=56 --time=2:00:00 -A <project_id>
+    salloc -p dev-g --nodes=1 --gpus-per-node=8 --ntasks-per-node=1 --cpus-per-task=56 --time=2:00:00 --account=project_XXXXXXXXX
     ```
 2.  **Enter the compute node:**
     ```bash
@@ -161,7 +161,7 @@ Get resources with _salloc_ and run batched inference directly in Python.
     ```
 3.  **Set required environment variables:**
     ```bash
-    export HF_HOME=/scratch/<project_id>/hf-cache
+    export HF_HOME=/scratch/project_<project_id>/$USER/hf-cache
     export HIP_VISIBLE_DEVICES=$ROCR_VISIBLE_DEVICES
     export TORCH_COMPILE_DISABLE=1
     ```
