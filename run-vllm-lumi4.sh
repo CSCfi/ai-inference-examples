@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -A project_XXXXXXXXX
 #SBATCH -p dev-g
-#SBATCH --time 1:00:00
+#SBATCH --time 2:00:00
 #SBATCH --tasks-per-node 1
 #SBATCH --gpus-per-node 4
 #SBATCH --nodes 1
