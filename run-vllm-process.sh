@@ -5,7 +5,7 @@
 # arguments, this script by deafult configures vLLM with 
 #   - tensor parallelism among the GPUs available on a node,
 #   - pipeline parallelism between nodes,
-#   - listening on unix domain socket file vllm-<job-id>.sock.
+#   - listening on unix domain socket file vllm-<USER>.sock.
 #
 # In that case, only power-of-two amounts of GPUs should be allocated (and ideally full nodes when using multiple nodes).
 
@@ -16,9 +16,9 @@ MODEL_NAME=$1
 shift 1
 
 # By default we configure vLLM to use a Unix Domain Socket file (vllm.sock) to listen for requests using the --uds argument.
-# This automatically restricts request to users that can access that file (i.e., members of our project), instead of being
-# an open HTTP port anyone on the system could potentially access.
-SOCKET_FILE=$TMPDIR/vllm-$SLURM_JOB_ACCOUNT.sock
+# This automatically restricts request to users that can access that file, instead of being an open HTTP port anyone 
+# on the system could potentially access.
+SOCKET_FILE=$TMPDIR/vllm-$USER.sock
 VLLM_ARGS="${@:- --tensor-parallel-size $SLURM_GPUS_ON_NODE --pipeline-parallel-size $SLURM_NNODES --uds $SOCKET_FILE}"
 
 if [[ -z "$MODEL_NAME" ]]; then
