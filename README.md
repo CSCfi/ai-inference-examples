@@ -167,7 +167,7 @@ Get resources with _salloc_ and run batched inference directly in Python. Use th
     ```bash
     export HIP_VISIBLE_DEVICES=$ROCR_VISIBLE_DEVICES
     export TORCH_COMPILE_DISABLE=1
-    export HF_HOME=/scratch/project_<project_id>/$USER/hf-cache
+    export HF_HOME=/scratch/$SLURM_JOB_ACCOUNT/$USER/hf-cache
     ```
 
 4.  **Run the script**:
