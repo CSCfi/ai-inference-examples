@@ -128,8 +128,10 @@ Start a vLLM server and start a chat (with history) with the LLM.
     srun --overlap --jobid <slurm-job-id> --pty bash
     ```
 3. **Wait ~20min for the model to load.** Monitor progress with `tail -f slurm-<job-id>.out`.
-   The model has been loaded when you see line similar to:
-   `[0;36m(APIServer pid=8379)[0;0m INFO:     Application startup complete.`
+    The model has been loaded when you see a line similar to:
+   ```bash
+   (APIServer pid=8379) INFO: Application startup complete.
+   ```
 
 5.  **Launch the chat script.**
     ```bash
