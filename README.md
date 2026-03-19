@@ -23,7 +23,7 @@ For example, the following opens a terminal on the node running vLLM and sends a
 ```bash
 username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
 
-username@compute-node$ curl --unix-socket $TMPDIR/vllm-project_<project_id>.sock http://localhost:8000/v1/completions \
+username@compute-node$ curl --unix-socket $TMPDIR/vllm-project_<slurm-job-id>.sock http://localhost:8000/v1/completions \
     -H "Content-Type: application/json" \
     -d '{
         "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
