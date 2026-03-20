@@ -6,7 +6,7 @@
 #SBATCH --cpus-per-task=28
 #SBATCH --gpus-per-node 4
 #SBATCH --nodes 1
-#SBATCH --mem 460G
+#SBATCH --mem 240G
 
 # We use the PyTorch container provided by the LUMI AI Factory Services, which contains vLLM.
 export CONTAINER_IMAGE=/appl/local/laifs/containers/lumi-multitorch-latest.sif
