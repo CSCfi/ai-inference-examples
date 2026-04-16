@@ -1,8 +1,9 @@
 #!/bin/bash
-#SBATCH -A project_462000007
+#SBATCH -A project_XXXXXXXXX
 #SBATCH -p dev-g
 #SBATCH --time 1:00:00
 #SBATCH --tasks-per-node 1
+#SBATCH --cpus-per-task=56
 #SBATCH --gpus-per-node 8
 #SBATCH --nodes 2
 #SBATCH --mem 460G
