@@ -19,7 +19,7 @@ shift 1
 # This automatically restricts request to users that can access that file, instead of being an open HTTP port anyone 
 # on the system could potentially access.
 SOCKET_FILE=$TMPDIR/vllm-$SLURM_JOB_ID.sock
-VLLM_ARGS="${@:- --tensor-parallel-size $SLURM_GPUS_ON_NODE --pipeline-parallel-size $SLURM_NNODES --uds $SOCKET_FILE}"
+VLLM_ARGS="${@:- --tensor-parallel-size $SLURM_GPUS_ON_NODE --pipeline-parallel-size $SLURM_NNODES --uds $SOCKET_FILE --load-format runai_streamer}"
 
 if [[ -z "$MODEL_NAME" ]]; then
     echo "Usage: ./run_vllm_process.sh <model_name> "
