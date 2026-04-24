@@ -92,7 +92,7 @@ On Puhti/Mahti
 username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
 
 username@compute-node$ module load pytorch
-username@compute-node$ python python_client.py $TMPDIR/vllm-${SLURM_JOB_ID}.sock
+username@compute-node$ python python_client.py
 ```
 
 On Roihu
