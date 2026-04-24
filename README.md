@@ -17,7 +17,7 @@ Scripts to run [DeepSeek-R1](https://huggingface.co/deepseek-ai/DeepSeek-R1) (di
 sbatch run-vllm-lumi4.sh
 ```
 
-The LUMI scripts start the vLLM server listening on a Unix Domain Socket which is represented by a file on the filesystem (by default `vllm-<slurm_job_id>.sock`) rather than opening a network port on the node for security reasons. This also has the advantage that we cannot get into conflicts with other processes that might block the same port.
+The **LUMI** and **Roihu** scripts start the vLLM server listening on a Unix Domain Socket which is represented by a file on the filesystem (by default `vllm-<slurm_job_id>.sock`) rather than opening a network port on the node for security reasons. This also has the advantage that we cannot get into conflicts with other processes that might block the same port.
 
 While the job is running, you can connect connect to the vLLM server with a process on the same node via that node.
 For example, the following opens a terminal on the node running vLLM and sends a request via the cURL command line tool:
@@ -25,10 +25,10 @@ For example, the following opens a terminal on the node running vLLM and sends a
 ```bash
 username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
 
-username@compute-node$ curl --unix-socket $TMPDIR/vllm-project_<slurm-job-id>.sock http://localhost:8000/v1/completions \
+username@compute-node$ curl --unix-socket $TMPDIR/vllm-$SLURM_JOB_ID.sock http://localhost:8000/v1/completions \
     -H "Content-Type: application/json" \
     -d '{
-        "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
+        "model": "Qwen/Qwen3.6-27B",
         "prompt": "Running vLLM on a supercomputer is",
         "max_tokens": 100,
         "temperature": 0.5,
@@ -68,13 +68,13 @@ for chunk in client.completions.create(
         print(chunk.choices[0].text, end="")
 ```
 
-The version of vLLM installed on Puhti and Mahti does not currently support UDS, so instead we configure it
+The version of vLLM installed on **Puhti** and **Mahti** does not currently support UDS, so instead we configure it
 to require authentication with an API key which we generate in the sbatch script. You can find the
 key in the job log. The correponding cURL request is:
 
 ```bash 
 username@compute-node$ curl http://localhost:8000/v1/completions \
-    -H "Authorization: Bearer <api-key>"
+    -H "Authorization: Bearer <api-key>" \
     -H "Content-Type: application/json" \
     -d '{
         "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
@@ -87,19 +87,27 @@ username@compute-node$ curl http://localhost:8000/v1/completions \
 
 You can run the script as follows.
 
-On Puhti/Mahti/Roihu
+On Puhti/Mahti
 ```bash
 username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
 
 username@compute-node$ module load pytorch
-username@compute-node$ python script.py
+username@compute-node$ python python_client.py $TMPDIR/vllm-${SLURM_JOB_ID}.sock
+```
+
+On Roihu
+```bash
+username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
+
+username@compute-node$ module load python-vllm
+username@compute-node$ python python_client.py $TMPDIR/vllm-${SLURM_JOB_ID}.sock
 ```
 
 On LUMI
 ```bash
 username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
 
-username@compute-node$ singularity run -B /pfs,/scratch,/projappl /appl/local/laifs/containers/lumi-multitorch-latest.sif python python_client.py $TMPDIR/vllm-$SLURM_JOB_ACCOUNT.sock 
+username@compute-node$ singularity run -B /pfs,/scratch,/projappl /appl/local/laifs/containers/lumi-multitorch-latest.sif python python_client.py $TMPDIR/vllm-$SLURM_JOB_ID.sock 
 ```
 
 ## Ollama examples
