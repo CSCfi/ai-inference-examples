@@ -92,7 +92,7 @@ On Puhti/Mahti
 username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
 
 username@compute-node$ module load pytorch
-username@compute-node$ python python_client.py
+username@compute-node$ python script.py
 ```
 
 On Roihu
@@ -100,14 +100,14 @@ On Roihu
 username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
 
 username@compute-node$ module load python-vllm
-username@compute-node$ python python_client.py $TMPDIR/vllm-${SLURM_JOB_ID}.sock
+username@compute-node$ python script.py $TMPDIR/vllm-$SLURM_JOB_ID.sock
 ```
 
 On LUMI
 ```bash
 username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
 
-username@compute-node$ singularity run -B /pfs,/scratch,/projappl /appl/local/laifs/containers/lumi-multitorch-latest.sif python python_client.py $TMPDIR/vllm-$SLURM_JOB_ID.sock 
+username@compute-node$ singularity run -B /pfs,/scratch,/projappl /appl/local/laifs/containers/lumi-multitorch-latest.sif python script.py $TMPDIR/vllm-$SLURM_JOB_ID.sock 
 ```
 
 ## Ollama examples
