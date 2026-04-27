@@ -99,7 +99,7 @@ On Roihu
 ```bash
 username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
 
-username@compute-node$ module load python-vllm
+username@compute-node$ module load python-vllm/0.19
 username@compute-node$ python script.py $TMPDIR/vllm-$SLURM_JOB_ID.sock
 ```
 
