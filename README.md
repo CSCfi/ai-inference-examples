@@ -2,7 +2,7 @@
 
 ## Starting a vLLM inference server
 
-Scripts to run [DeepSeek-R1](https://huggingface.co/deepseek-ai/DeepSeek-R1) (distilled versions, Qwen-32B or Llama-70B) vLLM using 4 GPUs on Puhti, Mahti or LUMI. The Roihu example uses [Qwen3-32B](https://huggingface.co/Qwen/Qwen3-32B) since the current vLLM version had some compatibility issues with the Deepseek model. There is also a script to run on Roihu using two full nodes (8 GPUs). Finally, there is a script to run the full [DeepSeek-R1-0528](https://huggingface.co/deepseek-ai/DeepSeek-R1-0528) model on two full LUMI nodes (16 GPUs).
+Scripts to run [DeepSeek-R1](https://huggingface.co/deepseek-ai/DeepSeek-R1) (distilled versions, Qwen-32B or Llama-70B) vLLM using 4 GPUs on Puhti, Mahti or LUMI. The Roihu examples use [Qwen3-32B](https://huggingface.co/Qwen/Qwen3-32B) since the current vLLM version had some compatibility issues with the Deepseek model. There is also a script to run on Roihu using two full nodes (8 GPUs). Finally, there is a script to run the full [DeepSeek-R1-0528](https://huggingface.co/deepseek-ai/DeepSeek-R1-0528) model on two full LUMI nodes (16 GPUs).
 
 - [`run-vllm-puhti4.sh`](run-vllm-puhti4.sh) ( deepseek-ai/DeepSeek-R1-Distill-Qwen-32B )
 - [`run-vllm-mahti4.sh`](run-vllm-mahti4.sh) ( deepseek-ai/DeepSeek-R1-Distill-Qwen-32B )
