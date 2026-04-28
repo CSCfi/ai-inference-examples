@@ -30,7 +30,7 @@ username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
 username@compute-node$ curl --unix-socket $TMPDIR/vllm-$SLURM_JOB_ID.sock http://localhost:8000/v1/completions \
     -H "Content-Type: application/json" \
     -d '{
-        "model": "Qwen/Qwen3.6-27B",
+        "model": "Qwen/Qwen3-32B",
         "prompt": "Running vLLM on a supercomputer is",
         "max_tokens": 100,
         "temperature": 0.5,
