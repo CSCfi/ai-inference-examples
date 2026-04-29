@@ -2,12 +2,12 @@
 
 ## Starting a vLLM inference server
 
-Scripts to run [DeepSeek-R1](https://huggingface.co/deepseek-ai/DeepSeek-R1) (distilled versions, Qwen-32B or Llama-70B) vLLM using 4 GPUs on Puhti, Mahti, Roihu or LUMI. There is also a script to run on Roihu using two full nodes (8 GPUs). Finally, there is a script to run the full [DeepSeek-R1-0528](https://huggingface.co/deepseek-ai/DeepSeek-R1-0528) model on two full LUMI nodes (16 GPUs).
+Scripts to run [DeepSeek-R1](https://huggingface.co/deepseek-ai/DeepSeek-R1) (distilled versions, Qwen-32B or Llama-70B) vLLM using 4 GPUs on Puhti, Mahti or LUMI. The Roihu examples use [Qwen3-32B](https://huggingface.co/Qwen/Qwen3-32B) since the vLLM version had some compatibility issues with the Deepseek model. There is also a script to run on Roihu using two full nodes (8 GPUs). Finally, there is a script to run the full [DeepSeek-R1-0528](https://huggingface.co/deepseek-ai/DeepSeek-R1-0528) model on two full LUMI nodes (16 GPUs).
 
 - [`run-vllm-puhti4.sh`](run-vllm-puhti4.sh) ( deepseek-ai/DeepSeek-R1-Distill-Qwen-32B )
 - [`run-vllm-mahti4.sh`](run-vllm-mahti4.sh) ( deepseek-ai/DeepSeek-R1-Distill-Qwen-32B )
-- [`run-vllm-roihu4.sh`](run-vllm-roihu4.sh) ( deepseek-ai/DeepSeek-R1-Distill-Qwen-32B )
-- [`run-vllm-roihu8.sh`](run-vllm-roihu8.sh) ( deepseek-ai/DeepSeek-R1-Distill-Qwen-32B )
+- [`run-vllm-roihu4.sh`](run-vllm-roihu4.sh) ( Qwen/Qwen3-32B )
+- [`run-vllm-roihu8.sh`](run-vllm-roihu8.sh) ( Qwen/Qwen3-32B )
 - [`run-vllm-lumi4`](run-vllm-lumi4.sh) (deepseek-ai/DeepSeek-R1-Distill-Qwen-32B)
 - [`run-vllm-lumi16`](run-vllm-lumi16.sh) (deepseek-ai/DeepSeek-R1-0528)
 
@@ -17,18 +17,38 @@ Scripts to run [DeepSeek-R1](https://huggingface.co/deepseek-ai/DeepSeek-R1) (di
 sbatch run-vllm-lumi4.sh
 ```
 
-The LUMI scripts start the vLLM server listening on a Unix Domain Socket which is represented by a file on the filesystem (by default `vllm-<slurm_job_id>.sock`) rather than opening a network port on the node for security reasons. This also has the advantage that we cannot get into conflicts with other processes that might block the same port.
+### LUMI & Roihu
+
+The LUMI and Roihu scripts start the vLLM server listening on a Unix Domain Socket which is represented by a file on the filesystem (by default `vllm-<slurm_job_id>.sock`) rather than opening a network port on the node for security reasons. This also has the advantage that we cannot get into conflicts with other processes that might block the same port.
 
 While the job is running, you can connect connect to the vLLM server with a process on the same node via that node.
 For example, the following opens a terminal on the node running vLLM and sends a request via the cURL command line tool:
 
+On LUMI with DeepSeek-R1-Distill-Qwen-32B
+
 ```bash
 username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
 
-username@compute-node$ curl --unix-socket $TMPDIR/vllm-project_<slurm-job-id>.sock http://localhost:8000/v1/completions \
+username@compute-node$ curl --unix-socket $TMPDIR/vllm-$SLURM_JOB_ID.sock http://localhost:8000/v1/completions \
     -H "Content-Type: application/json" \
     -d '{
         "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
+        "prompt": "Running vLLM on a supercomputer is",
+        "max_tokens": 100,
+        "temperature": 0.5,
+        "stream": false
+    }'
+```
+
+On Roihu with Qwen3-32B
+
+```bash
+username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
+
+username@compute-node$ curl --unix-socket $TMPDIR/vllm-$SLURM_JOB_ID.sock http://localhost:8000/v1/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+        "model": "Qwen/Qwen3-32B",
         "prompt": "Running vLLM on a supercomputer is",
         "max_tokens": 100,
         "temperature": 0.5,
@@ -68,13 +88,33 @@ for chunk in client.completions.create(
         print(chunk.choices[0].text, end="")
 ```
 
-The version of vLLM installed on Puhti and Mahti does not currently support UDS, so instead we configure it
-to require authentication with an API key which we generate in the sbatch script. You can find the
-key in the job log. The correponding cURL request is:
+You can run the script as follows.
 
-```bash 
+On LUMI
+```bash
+username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
+
+username@compute-node$ singularity run -B /pfs,/scratch,/projappl /appl/local/laifs/containers/lumi-multitorch-latest.sif python vllm_client.py $TMPDIR/vllm-$SLURM_JOB_ID.sock 
+```
+
+On Roihu
+```bash
+username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
+
+username@compute-node$ module load python-vllm/0.19
+username@compute-node$ python vllm_client.py $TMPDIR/vllm-$SLURM_JOB_ID.sock
+```
+**Note:** The script uses the Deepseek model by default, for Roihu you need to change the model name in the script.
+
+### Puhti & Mahti
+
+The version of vLLM installed on Puhti and Mahti does not currently support UDS, so instead we configure it to require authentication with an API key which we generate in the sbatch script. You can find the key in the job log. The following opens a terminal on the node running vLLM and sends a request via the cURL command line tool:
+
+```bash
+username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
+
 username@compute-node$ curl http://localhost:8000/v1/completions \
-    -H "Authorization: Bearer <api-key>"
+    -H "Authorization: Bearer <api-key>" \
     -H "Content-Type: application/json" \
     -d '{
         "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
@@ -83,23 +123,6 @@ username@compute-node$ curl http://localhost:8000/v1/completions \
         "temperature": 0.5,
         "stream": false
     }'
-```
-
-You can run the script as follows.
-
-On Puhti/Mahti/Roihu
-```bash
-username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
-
-username@compute-node$ module load pytorch
-username@compute-node$ python script.py
-```
-
-On LUMI
-```bash
-username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
-
-username@compute-node$ singularity run -B /pfs,/scratch,/projappl /appl/local/laifs/containers/lumi-multitorch-latest.sif python python_client.py $TMPDIR/vllm-$SLURM_JOB_ACCOUNT.sock 
 ```
 
 ## Ollama examples

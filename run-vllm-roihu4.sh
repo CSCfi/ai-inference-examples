@@ -6,14 +6,14 @@
 #SBATCH --tasks-per-node=1
 #SBATCH --gres=gpu:gh200:4
 #SBATCH --nodes=1
-#SBATCH --mem=480G
+#SBATCH --mem=240G
 #SBATCH --cpus-per-task=288
 
 module purge
 module load csc-tools
-module load python-vllm
+module load python-vllm/0.19
 
-MODEL=deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
+MODEL=Qwen/Qwen3-32B
 
 # We are putting the cache in the ramdisk, stored in
 # memory. Alternatively store it to the project's scratch.
