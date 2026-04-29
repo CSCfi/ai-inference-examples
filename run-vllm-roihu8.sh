@@ -29,7 +29,7 @@ export MASTER_PORT=${MASTER_PORT:-9999}
 # We configure vLLM to use a Unix Domain Socket file (vllm.sock) to listen for requests using the --uds argument.
 # This automatically restricts request to users that can access that file (i.e., members of our project), instead of being
 # an open HTTP port anyone on the system could potentially access.
-SOCKET_FILE=$TMPDIR/vllm-$SLURM_JOB_ACCOUNT.sock
+SOCKET_FILE=$TMPDIR/vllm-$SLURM_JOB_ID.sock
 
 srun apptainer exec --bind=$(csc-common-bind) $SIF ./run-vllm-process.sh $MODEL --tensor-parallel 4 --pipeline-parallel $SLURM_NNODES --all2all-backend deepep_low_latency --uds $SOCKET_FILE
 
