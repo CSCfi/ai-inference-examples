@@ -11,9 +11,9 @@
 
 module purge
 module load csc-tools
-module load python-vllm
+module load python-vllm/0.19
 
-MODEL=deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
+MODEL=Qwen/Qwen3-32B
 
 # We are putting the cache in the ramdisk, stored in
 # memory. Alternatively store it to the project's scratch.
