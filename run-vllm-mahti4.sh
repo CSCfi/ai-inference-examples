@@ -6,7 +6,7 @@
 #SBATCH --time=15
 #SBATCH --gres=gpu:a100:4
 
-module load pytorch/2.9
+module load pytorch/2.7
 
 # Generate a random API key for the vLLM server and output it
 export VLLM_API_KEY=$(mktemp -u XXXXXXXXXXXX)
