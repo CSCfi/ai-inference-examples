@@ -104,6 +104,7 @@ username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
 username@compute-node$ module load python-vllm/0.19
 username@compute-node$ python vllm_client.py $TMPDIR/vllm-$SLURM_JOB_ID.sock
 ```
+**Note:** The script uses the Deepseek model by default, for Roihu you need to change the model name in the script.
 
 ### Puhti & Mahti
 
