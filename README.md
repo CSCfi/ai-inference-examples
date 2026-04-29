@@ -108,11 +108,11 @@ username@compute-node$ python vllm_client.py $TMPDIR/vllm-$SLURM_JOB_ID.sock
 
 ### Puhti & Mahti
 
-The version of vLLM installed on Puhti and Mahti does not currently support UDS, so instead we configure it
-to require authentication with an API key which we generate in the sbatch script. You can find the
-key in the job log. The correponding cURL request is:
+The version of vLLM installed on Puhti and Mahti does not currently support UDS, so instead we configure it to require authentication with an API key which we generate in the sbatch script. You can find the key in the job log. The following opens a terminal on the node running vLLM and sends a request via the cURL command line tool:
 
-```bash 
+```bash
+username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
+
 username@compute-node$ curl http://localhost:8000/v1/completions \
     -H "Authorization: Bearer <api-key>" \
     -H "Content-Type: application/json" \
