@@ -24,6 +24,24 @@ The LUMI and Roihu scripts start the vLLM server listening on a Unix Domain Sock
 While the job is running, you can connect connect to the vLLM server with a process on the same node via that node.
 For example, the following opens a terminal on the node running vLLM and sends a request via the cURL command line tool:
 
+On LUMI with DeepSeek-R1-Distill-Qwen-32B
+
+```bash
+username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
+
+username@compute-node$ curl --unix-socket $TMPDIR/vllm-$SLURM_JOB_ID.sock http://localhost:8000/v1/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+        "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
+        "prompt": "Running vLLM on a supercomputer is",
+        "max_tokens": 100,
+        "temperature": 0.5,
+        "stream": false
+    }'
+```
+
+On Roihu with Qwen3-32B
+
 ```bash
 username@login-node$ srun --overlap --jobid <slurm-job-id> --pty bash
 
