@@ -26,8 +26,6 @@ module load lumi-aif-singularity-bindings
 # Where to store the huge models. Point this to your project's scratch directory.
 export HF_HOME=/scratch/$SLURM_JOB_ACCOUNT/hf-cache/
 
-export TORCH_COMPILE_DISABLE=1
-
 export MASTER_ADDR=${MASTER_ADDR:-$(scontrol show hostnames "$SLURM_JOB_NODELIST" | head -n 1)}
 export MASTER_PORT=${MASTER_PORT:-9999}
 
