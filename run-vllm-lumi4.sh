@@ -21,6 +21,9 @@ module load lumi-aif-singularity-bindings
 # Where to store the huge models. Point this to your project's scratch directory.
 export HF_HOME=/scratch/$SLURM_JOB_ACCOUNT/hf-cache/
 
+# Where to store Xet cache. Point this to your project's scratch directory.
+export HF_XET_CACHE=/scratch/$SLURM_JOB_ACCOUNT/hf-xet-cache/
+
 # The default parallelisation options applied by the run_vllm_process script will apply 4-fold tensor parallelism,
 # which is fine for this, so we don't need to provide any options here except for the model name.
 srun singularity exec $CONTAINER_IMAGE ./run-vllm-process.sh deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
