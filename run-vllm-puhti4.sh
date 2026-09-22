@@ -28,3 +28,4 @@ srun vllm serve $MODEL \
        --max-model-len 32768 \
        --dtype half \
        --enforce-eager
+

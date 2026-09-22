@@ -26,3 +26,4 @@ srun vllm serve $MODEL \
        --max-model-len 32768 \
        --gpu_memory_utilization 0.98 \
        --enforce-eager 
+
