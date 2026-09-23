@@ -8,6 +8,11 @@
 #SBATCH --nodes 2
 #SBATCH --mem 460G
 
+# Set MIOPEN temp folder to avoid collisions with other users on the same node
+MIOPEN_DIR=$(mktemp -d)
+export MIOPEN_CUSTOM_CACHE_DIR=$MIOPEN_DIR/cache
+export MIOPEN_USER_DB=$MIOPEN_DIR/config
+
 # We use the PyTorch container provided by the LUMI AI Factory Services, which contains vLLM.
 export CONTAINER_IMAGE=/appl/local/laifs/containers/lumi-multitorch-latest.sif
 module use /appl/local/laifs/modules
@@ -35,9 +40,15 @@ export MASTER_PORT=${MASTER_PORT:-9999}
 # We configure vLLM to use a Unix Domain Socket file (vllm.sock) to listen for requests using the --uds argument.
 # This automatically restricts request to users that can access that file (i.e., members of our project), instead of being
 # an open HTTP port anyone on the system could potentially access.
-SOCKET_FILE=$TMPDIR/vllm-$SLURM_JOB_ACCOUNT.sock
+SOCKET_FILE=$TMPDIR/vllm-$SLURM_JOB_ID.sock
 
 # TODO: double check configuration for expert parallelism for better performance - data parallelism?
 # https://docs.vllm.ai/en/latest/serving/expert_parallel_deployment/#example-2-node-deployment
-srun singularity exec $CONTAINER_IMAGE ./run-vllm-process.sh deepseek-ai/DeepSeek-R1-0528 --tensor-parallel 8 --pipeline-parallel $SLURM_NNODES --enable-expert-parallel --all2all-backend deepep_low_latency --uds $SOCKET_FILE
+srun singularity exec $CONTAINER_IMAGE ./run-vllm-process.sh deepseek-ai/DeepSeek-R1-0528 \
+    --tensor-parallel 8 \
+    --pipeline-parallel $SLURM_NNODES \
+    --enable-expert-parallel \
+    --all2all-backend deepep_low_latency \
+    --uds $SOCKET_FILE \
+    --load-format runai_streamer
 

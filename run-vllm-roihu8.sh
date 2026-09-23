@@ -31,5 +31,10 @@ export MASTER_PORT=${MASTER_PORT:-9999}
 # an open HTTP port anyone on the system could potentially access.
 SOCKET_FILE=$TMPDIR/vllm-$SLURM_JOB_ID.sock
 
-srun apptainer exec --bind=$(csc-common-bind) $SIF ./run-vllm-process.sh $MODEL --tensor-parallel 4 --pipeline-parallel $SLURM_NNODES --all2all-backend deepep_low_latency --uds $SOCKET_FILE
+srun apptainer exec --bind=$(csc-common-bind) $SIF ./run-vllm-process.sh $MODEL \
+    --tensor-parallel 4 \
+    --pipeline-parallel $SLURM_NNODES \
+    --all2all-backend deepep_low_latency \
+    --uds $SOCKET_FILE \
+    --load-format runai_streamer
 

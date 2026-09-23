@@ -47,3 +47,4 @@ ollama run $MODEL "In the big picture, do LLMs really benefit humanity?"
 
 # At the end of the job, stop the ollama server
 kill $OLLAMA_PID
+
