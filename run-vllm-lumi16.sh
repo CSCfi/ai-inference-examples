@@ -23,7 +23,7 @@ module load lumi-aif-singularity-bindings
 # export NCCL_NET_GDR_LEVEL=PHB
 # export FI_MR_CACHE_MONITOR=userfaultfd
 # export FI_CXI_DEFAULT_CQ_SIZE=131072
-# export HSA_ENABLE_SDMA=0 
+# export HSA_ENABLE_SDMA=0
 # export RCCL_MSCCL_FORCE_ENABLE=1
 # export OMP_NUM_THREADS=1
 # export CUDA_DEVICE_MAX_CONNECTIONS=1
@@ -33,6 +33,9 @@ export HF_HOME=/scratch/$SLURM_JOB_ACCOUNT/hf-cache/
 
 # Where to store Xet cache. Point this to your project's scratch directory.
 export HF_XET_CACHE=/scratch/$SLURM_JOB_ACCOUNT/hf-xet-cache/
+
+# Where to store vLLM's torch.compile cache
+export VLLM_CACHE_ROOT=/scratch/$SLURM_JOB_ACCOUNT/$USER/vllm-cache
 
 export MASTER_ADDR=${MASTER_ADDR:-$(scontrol show hostnames "$SLURM_JOB_NODELIST" | head -n 1)}
 export MASTER_PORT=${MASTER_PORT:-9999}
@@ -44,7 +47,7 @@ SOCKET_FILE=$TMPDIR/vllm-$SLURM_JOB_ID.sock
 
 # TODO: double check configuration for expert parallelism for better performance - data parallelism?
 # https://docs.vllm.ai/en/latest/serving/expert_parallel_deployment/#example-2-node-deployment
-srun singularity exec $CONTAINER_IMAGE ./run-vllm-process.sh deepseek-ai/DeepSeek-R1-0528 \
+srun singularity run $CONTAINER_IMAGE ./run-vllm-process.sh deepseek-ai/DeepSeek-R1-0528 \
     --tensor-parallel 8 \
     --pipeline-parallel $SLURM_NNODES \
     --enable-expert-parallel \

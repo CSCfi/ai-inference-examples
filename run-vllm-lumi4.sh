@@ -24,7 +24,10 @@ export HF_HOME=/scratch/$SLURM_JOB_ACCOUNT/hf-cache/
 # Where to store Xet cache. Point this to your project's scratch directory.
 export HF_XET_CACHE=/scratch/$SLURM_JOB_ACCOUNT/hf-xet-cache/
 
+# Where to store vLLM's torch.compile cache
+export VLLM_CACHE_ROOT=/scratch/$SLURM_JOB_ACCOUNT/$USER/vllm-cache
+
 # The default parallelisation options applied by the run_vllm_process script will apply 4-fold tensor parallelism,
 # which is fine for this, so we don't need to provide any options here except for the model name.
-srun singularity exec $CONTAINER_IMAGE ./run-vllm-process.sh deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
+srun singularity run $CONTAINER_IMAGE ./run-vllm-process.sh deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
 
