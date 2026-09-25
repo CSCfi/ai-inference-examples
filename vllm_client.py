@@ -9,7 +9,7 @@ args = parser.parse_args()
 transport = httpx.HTTPTransport(uds=args.socket_file)
 httpx_client = httpx.Client(transport=transport)
 client = openai.OpenAI(
-        api_key='',
+        api_key='hello',
         base_url='http://localhost/v1',
         http_client=httpx_client
 )
